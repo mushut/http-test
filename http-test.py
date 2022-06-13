@@ -1,58 +1,36 @@
 import requests
-#from html.parser import HTMLParser
 from bs4 import BeautifulSoup
 
+# Class for handling event data
 class Data():
 	def __init__(self):
-		self.data = []
+		self.date = []
 		
 	def add_data(self, data):
-		self.data.append(data)
+		self.date.append(data)
 		
 	def print_data(self):
-		for i in self.data:
+		for i in self.date:
 			print(i)
 
-#class HTML_parser(HTMLParser):
-#	def handle_starttag(self, tag, attrs):
-#		#print("Encountered a start tag:", tag)
-#		pass
-#
-#	def handle_endtag(self, tag):
-#		#print("Encountered an end tag :", tag)
-#		pass
-#
-#	def handle_data(self, data):
-#		#print("Encountered some data  :", data)
-#		
-#		if self.get_starttag_text() == "<h1 class=\"hero_slide_name\">":
-#			pass
-
 def main():
+	results = Data()
+
 	bar_loose_html = requests.get('https://barloose.com/')
+	helsinki_json = requests.get('http://open-api.myhelsinki.fi/v1/events/')
 	
-	# Print data for testing
-	# print(x.text)
-	
-	#results = Data()
-	
-	# parse html
-	#parser = HTML_parser(results)
-	
+	# Handle Bar Loose event data
 	feed = bar_loose_html.text
 	
 	soup = BeautifulSoup(feed, 'html.parser')
 	
-
+	event_date_tags = soup.find_all('time')
+	event_dates = []
 	
-	# Testing parser
-	#parser.feed(bar_loose_html.text)
+	for date in event_date_tags:
+		# Dates have dash character compared to time that have colon
+		if str.find(str(date), "-") > 0:
+			results.add_data(date['datetime'])
 	
-	results = soup.find_all("div", "hero_slide_date")
-	
-	for result in results:
-		print(result)
-	
-	# search for tag that marks the event data
 
 main()
